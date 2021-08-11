@@ -1,0 +1,41 @@
+
+#+BEGIN_SRC objc -n 1 :hl_lines 0-0,0-0
+void UIViewReportBrokenSuperviewChain(UIView *__strong, UIView *__strong, BOOL)()
+#+END_SRC
+
+原因:
+1. 添加摄像头预览视图的layer
+   #+BEGIN_SRC objc -n 1 :hl_lines 0-0,0-0
+@property (strong,nonatomic)AVCaptureVideoPreviewLayer * preview;
+//覆盖视图
+@property (nonatomic, strong) UIView *overlayView;
+
+[self.view.layer insertSublayer:_preview atIndex:0];
+   #+END_SRC
+2. 添加遮罩层
+   #+BEGIN_SRC objc -n 1 :hl_lines 0-0,0-0
+//问题行：    [self.view addSubview:self.overlayView];
+[self.view.layer insertSublayer:self.overlayView.layer atIndex:2];
+   #+END_SRC
+结论：在VC初始化过程，self.view添加视图时，被添加的对象只能是一种，要么通过图层，要么添加UIView视图。同时添加会造成上述错误。
+
+
+
+[[https://madordie.github.io/post/debug-uiview-m-190/][DEBUG - UIView.h#190 | 继刚的博客]]
+[[https://blog.csdn.net/iOSTianNan/article/details/80670002][Assertion failure in void UIViewReportBrokenSuperviewChain(UIView *__strong, ...]]
+
+* UIButton layer层无法点击问题
+目前只需要一个返回按钮，使用在导航条上添加返回按钮，避开在self.view添加button layer。
+
+设置导航条透明
+* UIButton layer层无法点击问题
+目前只需要一个返回按钮，使用在导航条上添加返回按钮，避开在self.view添加button layer。
+
+设置导航条透明[[https://www.jianshu.com/p/9ccee53b110f][IOS开发-UINavigationBar透明设置 - 简书]]
+#+BEGIN_SRC objc -n 1 :hl_lines 0-0,0-0
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+}
+#+END_SRC

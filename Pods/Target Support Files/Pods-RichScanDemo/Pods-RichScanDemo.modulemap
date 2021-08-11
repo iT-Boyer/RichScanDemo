@@ -1,0 +1,6 @@
+framework module Pods_RichScanDemo {
+  umbrella header "Pods-RichScanDemo-umbrella.h"
+
+  export *
+  module * { export * }
+}
